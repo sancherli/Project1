@@ -23,4 +23,13 @@ class App(models.Model):
     def __str__(self):
         return self.name
 
+
+class Review(models.Model):
+    name = models.CharField(max_length=100)
+    app = models.ForeignKey(App, on_delete=models.CASCADE)
+    text = models.TextField()
+
+    def __str__(self):
+        return f"{self.name} → {self.app.name}"
+
 # Create your models here.
