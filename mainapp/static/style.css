@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+nav {
+    margin-bottom: 30px;
+}
+
+nav a {
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.app-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+.app-of-day {
+    border: 2px solid #333;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+}

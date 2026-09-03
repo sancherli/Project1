@@ -1,0 +1,29 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Отзывы{% endblock %}
+
+{% block content %}
+
+<h1>Отзывы</h1>
+
+{% for review in reviews %}
+    <div>
+        <h3>{{ review.name }}</h3>
+
+        <p>Приложение: {{ review.app.name }}</p>
+        <p>Оценка: {{ review.rating }}</p>
+        <p>Комментарий: {{ review.comment }}</p>
+
+        {% if review.recommended %}
+            <p>Рекомендует</p>
+        {% else %}
+            <p>Не рекомендует</p>
+        {% endif %}
+    </div>
+    <hr>
+
+{% empty %}
+    <p>Отзывов пока нет.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Топ по цене{% endblock %}
+
+{% block content %}
+
+<h1>Топ по цене</h1>
+
+{% for app in apps %}
+    <div class="app-card">
+        <h2>{{ app.name }}</h2>
+        <p>Цена: {{ app.price }} $</p>
+    </div>
+{% empty %}
+    <p>Платных приложений пока нет.</p>
+{% endfor %}
+
+{% endblock %}
