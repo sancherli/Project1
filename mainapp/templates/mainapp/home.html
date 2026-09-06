@@ -6,6 +6,18 @@
 
 <h1>Все приложения</h1>
 
+<h2>Категории</h2>
+
+{% for category in categories %}
+    <p>
+        <a href="{% url 'category_detail' category.id %}">
+            {{ category.name }}
+        </a>
+    </p>
+{% empty %}
+    <p>Категорий пока нет.</p>
+{% endfor %}
+
 {% for app in apps %}
     <div class="app-card">
         <h2>{{ app.name }}</h2>
@@ -26,6 +38,15 @@
     <p>Приложений пока нет.</p>
 {% endfor %}
 
+{% for app in apps %}
+    <div class="app-card">
+
+        <h2>
+            <a href="{% url 'app_detail' app.id %}">
+                {{ app.name }}
+            </a>
+        </h2>
+{% endfor %}
 
 <h2>Приложение дня</h2>
 
@@ -43,5 +64,6 @@
 {% else %}
     <p>Приложений пока нет.</p>
 {% endif %}
+
 
 {% endblock %}

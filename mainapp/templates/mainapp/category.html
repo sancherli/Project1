@@ -1,0 +1,27 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block content %}
+
+<h1>Категория: {{ category.name }}</h1>
+
+{% for app in apps %}
+    <div class="app-card">
+        <h2>
+            <a href="{% url 'app_detail' app.id %}">
+                {{ app.name }}
+            </a>
+        </h2>
+
+        {% if app.price == 0 %}
+            <p>Цена: Бесплатно</p>
+        {% else %}
+            <p>Цена: {{ app.price }} $</p>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>В этой категории приложений пока нет.</p>
+{% endfor %}
+
+{% endblock %}

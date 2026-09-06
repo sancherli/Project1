@@ -10,7 +10,13 @@
     <div>
         <h3>{{ review.name }}</h3>
 
-        <p>Приложение: {{ review.app.name }}</p>
+        <p>
+            Приложение:
+            <a href="{% url 'app_detail' review.app.id %}">
+                {{ review.app.name }}
+            </a>
+        </p>
+
         <p>Оценка: {{ review.rating }}</p>
         <p>Комментарий: {{ review.comment }}</p>
 
@@ -20,6 +26,7 @@
             <p>Не рекомендует</p>
         {% endif %}
     </div>
+
     <hr>
 
 {% empty %}

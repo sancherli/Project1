@@ -4,16 +4,24 @@
 
 {% block content %}
 
-<h1>Бесплатные</h1>
+<h1>Бесплатные приложения</h1>
 
 <p>Найдено приложений: {{ apps|length }}</p>
 
 {% for app in apps %}
     <div class="app-card">
-        <h2>{{ app.name }}</h2>
-        <p>{{ app.description }}</p>
+
+        <h2>
+            <a href="{% url 'app_detail' app.id %}">
+                {{ app.name }}
+            </a>
+        </h2>
+
+        <p>Категория: {{ app.category }}</p>
         <p>Цена: Бесплатно</p>
+
     </div>
+
 {% empty %}
     <p>Бесплатных приложений пока нет.</p>
 {% endfor %}

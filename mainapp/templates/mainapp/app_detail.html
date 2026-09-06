@@ -1,0 +1,53 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}{{ app.name }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ app.name }}</h1>
+
+<p>
+    Категория:
+    {% if app.category %}
+        <a href="{% url 'category_detail' app.category.id %}">
+            {{ app.category.name }}
+        </a>
+    {% else %}
+        Без категории
+    {% endif %}
+</p>
+
+{% if app.price == 0 %}
+    <p>Цена: Бесплатно</p>
+{% else %}
+    <p>Цена: {{ app.price }} $</p>
+{% endif %}
+
+<p>Описание: {{ app.description }}</p>
+
+<p>Добавлено: {{ app.created_at|date:"d.m.Y" }}</p>
+
+<p>Скачиваний: {{ app.downloads }}</p>
+
+<h2>Отзывы</h2>
+
+<p>Всего отзывов: {{ app.review_set.count }}</p>
+
+{% for review in app.review_set.all %}
+    <div class="review-card">
+        <h3>{{ review.name }}</h3>
+
+        <p>Оценка: {{ review.rating }}</p>
+        <p>Комментарий: {{ review.comment }}</p>
+
+        {% if review.recommended %}
+            <p>Рекомендует</p>
+        {% else %}
+            <p>Не рекомендует</p>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Отзывов пока нет</p>
+{% endfor %}
+
+{% endblock %}

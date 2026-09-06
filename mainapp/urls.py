@@ -7,4 +7,8 @@ urlpatterns = [
     path('reviews/', views.reviews, name='reviews'),
     path('free/', views.free_apps, name='free'),
     path('top/', views.top_apps, name='top'),
+
+
+    path('app/<int:app_id>/', views.app_detail, name='app_detail'),
+    path('category/<int:category_id>/', views.category_detail, name='category_detail'),
 ]
