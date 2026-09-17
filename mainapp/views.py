@@ -1,15 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import App, Category, Review
-
-
-def home(request):
-    apps = App.objects.all()
-    app_of_day = App.objects.order_by('-price').first()
-    return render(request, 'mainapp/home.html', {
-        'apps': apps,
-        'app_of_day': app_of_day,
-    })
-
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 def about(request):
     return render(request, 'mainapp/about.html')
@@ -45,24 +37,52 @@ def app_detail(request, app_id):
 def category_detail(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     apps = App.objects.filter(category=category)
+    paginator = Paginator(apps, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     most_expensive = apps.order_by('-price').first()
-
     return render(request, 'mainapp/category.html', {
         'category': category,
-        'apps': apps,
+        'apps': page_obj,
+        'page_obj': page_obj,
         'most_expensive': most_expensive,
     })
 
 
 def home(request):
+    q = request.GET.get('q', '')
+    sort = request.GET.get('sort', '')
     apps = App.objects.all()
+    if q:
+        apps = apps.filter(
+            Q(name__icontains=q) |
+            Q(description__icontains=q)
+        ).order_by('name')
+    else:
+        apps = apps.order_by('-created_at')
+    paginator = Paginator(apps, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     categories = Category.objects.all()
     app_of_day = App.objects.order_by('-price').first()
-
     return render(request, 'mainapp/home.html', {
-        'apps': apps,
+        'apps': page_obj,
+        'page_obj': page_obj,
         'categories': categories,
         'app_of_day': app_of_day,
+        'q': q,
+        'sort': sort,
+    })
+
+
+def new(request):
+    apps = App.objects.order_by('-created_at')
+    paginator = Paginator(apps, 3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'mainapp/new.html', {
+        'apps': page_obj,
+        'page_obj': page_obj,
     })
 
 # Create your views here.

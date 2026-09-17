@@ -6,6 +6,18 @@
 
 <h1>Все приложения</h1>
 
+<form method="GET">
+    <input
+        type="text"
+        name="q"
+        value="{{ q }}"
+        placeholder="Поиск по названию и описанию..."
+    >
+    <button type="submit">Найти</button>
+</form>
+
+<hr>
+
 <h2>Категории</h2>
 
 {% for category in categories %}
@@ -18,42 +30,17 @@
     <p>Категорий пока нет.</p>
 {% endfor %}
 
-{% for app in apps %}
-    <div class="app-card">
-        <h2>{{ app.name }}</h2>
-
-        <p>Категория: {{ app.category }}</p>
-
-        {% if app.price == 0 %}
-            <p>Цена: Бесплатно</p>
-        {% else %}
-            <p>Цена: {{ app.price }} $</p>
-        {% endif %}
-
-        <p>{{ app.description|truncatechars:80 }}</p>
-        <p>Добавлено: {{ app.created_at|date:"d.m.Y" }}</p>
-        <p>Скачиваний: {{ app.downloads }}</p>
-    </div>
-{% empty %}
-    <p>Приложений пока нет.</p>
-{% endfor %}
-
-{% for app in apps %}
-    <div class="app-card">
-
-        <h2>
-            <a href="{% url 'app_detail' app.id %}">
-                {{ app.name }}
-            </a>
-        </h2>
-{% endfor %}
+<hr>
 
 <h2>Приложение дня</h2>
 
 {% if app_of_day %}
     <div class="app-of-day">
-        <h3>{{ app_of_day.name }}</h3>
-        <p>Категория: {{ app_of_day.category }}</p>
+        <h3>
+            "<a href="{% url 'app_detail' app_of_day.id %}">
+                {{ app_of_day.name }}
+            </a>
+        </h3>
 
         {% if app_of_day.price == 0 %}
             <p>Цена: Бесплатно</p>
@@ -65,5 +52,64 @@
     <p>Приложений пока нет.</p>
 {% endif %}
 
+<hr>
+
+<h2>Список приложений</h2>
+
+{% for app in apps %}
+    <div class="app-card">
+
+        <h3>
+            <a href="{% url 'app_detail' app.id %}">
+                {{ app.name }}
+            </a>
+        </h3>
+
+        <p>Категория: {{ app.category }}</p>
+
+        {% if app.price == 0 %}
+            <p>Цена: Бесплатно</p>
+        {% else %}
+            <p>Цена: {{ app.price }} $</p>
+        {% endif %}
+
+        <p>{{ app.description|truncatechars:100 }}</p>
+
+        <p>
+            Добавлено:
+            {{ app.created_at|date:"d.m.Y" }}
+        </p>
+
+        <p>Скачиваний: {{ app.downloads }}</p>
+
+    </div>
+
+    <hr>
+
+{% empty %}
+    <p>Приложения не найдены.</p>
+{% endfor %}
+
+
+<div class="pagination">
+
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&sort={{ sort }}">
+            Назад
+        </a>
+    {% endif %}
+
+    <span>
+        Страница {{ page_obj.number }}
+        из {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ q }}&sort={{ sort }}">
+            Вперёд
+        </a>
+    {% endif %}
+
+</div>
 
 {% endblock %}

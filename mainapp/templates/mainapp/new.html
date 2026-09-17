@@ -1,0 +1,37 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+
+<h1>Новинки</h1>
+
+{% for app in apps %}
+    <div>
+        <h2>
+            <a href="{% url 'app_detail' app.id %}">
+                {{ app.name }}
+            </a>
+        </h2>
+
+        <p>{{ app.description }}</p>
+        <p>Цена: {{ app.price }} $</p>
+    </div>
+
+{% empty %}
+    <p>Приложений пока нет.</p>
+{% endfor %}
+
+<div>
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Назад</a>
+    {% endif %}
+
+    <span>
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+    {% endif %}
+</div>
+
+{% endblock %}
