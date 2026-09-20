@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_POST
 from .models import App, Category, Review
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -13,6 +14,16 @@ def reviews(request):
         'reviews': reviews
     })
 
+@require_POST
+def add_review(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.app = app
+        review.save()
+        return redirect('main:app_detail', app_id=app.id)
+
 
 def free_apps(request):
     apps = App.objects.filter(price=0)
@@ -26,15 +37,15 @@ def top_apps(request):
         'apps': apps
     })
 
-def app_detail(request, app_id):
+def app_detail(request, app_id, app_name):
+    print(app_name)
     app = get_object_or_404(App, id=app_id)
-
     return render(request, 'mainapp/app_detail.html', {
-        'app': app
+        'app': app,
     })
 
-
-def category_detail(request, category_id):
+def category_detail(request, category_id, category_name):
+    print(category_name)
     category = get_object_or_404(Category, id=category_id)
     apps = App.objects.filter(category=category)
     paginator = Paginator(apps, 4)
@@ -47,7 +58,6 @@ def category_detail(request, category_id):
         'page_obj': page_obj,
         'most_expensive': most_expensive,
     })
-
 
 def home(request):
     q = request.GET.get('q', '')

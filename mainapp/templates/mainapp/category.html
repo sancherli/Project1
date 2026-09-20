@@ -17,7 +17,7 @@
 {% for app in apps %}
     <div>
         <h2>
-            <a href="{% url 'app_detail' app.id %}">
+            <a href="{% url 'mainapp:app_detail' app.id app.name %}">
                 {{ app.name }}
             </a>
         </h2>

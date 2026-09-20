@@ -9,11 +9,9 @@
 <p>
     Категория:
     {% if app.category %}
-        <a href="{% url 'category_detail' app.category.id %}">
-            {{ app.category.name }}
-        </a>
-    {% else %}
-        Без категории
+     <a href="{% url 'mainapp:category_detail' app.category.id app.category.name %}">
+    {{ app.category.name }}
+    </a>
     {% endif %}
 </p>
 

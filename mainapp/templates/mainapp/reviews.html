@@ -12,8 +12,8 @@
 
         <p>
             Приложение:
-            <a href="{% url 'app_detail' review.app.id %}">
-                {{ review.app.name }}
+            <a href="{% url 'mainapp:app_detail' review.app.id review.app.name %}">
+            {{ review.app.name }}
             </a>
         </p>
 

@@ -22,8 +22,8 @@
 
 {% for category in categories %}
     <p>
-        <a href="{% url 'category_detail' category.id %}">
-            {{ category.name }}
+        <a href="{% url 'mainapp:category_detail' category.id category.name %}">
+        {{ category.name }}
         </a>
     </p>
 {% empty %}
@@ -37,7 +37,7 @@
 {% if app_of_day %}
     <div class="app-of-day">
         <h3>
-            "<a href="{% url 'app_detail' app_of_day.id %}">
+            <a href="{% url 'mainapp:app_detail' app_of_day.id app_of_day.name %}">
                 {{ app_of_day.name }}
             </a>
         </h3>
@@ -60,8 +60,8 @@
     <div class="app-card">
 
         <h3>
-            <a href="{% url 'app_detail' app.id %}">
-                {{ app.name }}
+            <a href="{% url 'mainapp:app_detail' app.id app.name %}">
+            {{ app.name }}
             </a>
         </h3>
 
