@@ -48,6 +48,7 @@
             <p>Цена: {{ app_of_day.price }} $</p>
         {% endif %}
     </div>
+
 {% else %}
     <p>Приложений пока нет.</p>
 {% endif %}
@@ -91,25 +92,32 @@
 {% endfor %}
 
 
-<div class="pagination">
+{% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">Первая</a>
 
-    {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&sort={{ sort }}">
-            Назад
-        </a>
-    {% endif %}
+            <a href="?page={{ page_obj.previous_page_number }}">
+                ← Назад
+            </a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <strong>{{ num }}</strong>
+            {% else %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">
+                Вперёд →
+            </a>
 
-    <span>
-        Страница {{ page_obj.number }}
-        из {{ page_obj.paginator.num_pages }}
-    </span>
-
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&q={{ q }}&sort={{ sort }}">
-            Вперёд
-        </a>
-    {% endif %}
-
-</div>
+            <a href="?page={{ page_obj.paginator.num_pages }}">
+                Последняя
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
 
 {% endblock %}

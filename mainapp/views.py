@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from .models import App, Category, Review
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.views.generic import DetailView, TemplateView, ListView
+
 
 def about(request):
     return render(request, 'mainapp/about.html')
@@ -94,5 +96,48 @@ def new(request):
         'apps': page_obj,
         'page_obj': page_obj,
     })
+
+
+@require_GET
+def api_app_detail(request, id):
+    app = get_object_or_404(App, id=id)
+    return JsonResponse({
+        'id': app.id,
+        'name': app.name,
+        'description': app.description,
+        'price': str(app.price),
+        'icon': app.icon.url if app.icon else None,
+    })
+
+
+@require_GET
+def index(request, max_price=None, min_price=None):
+    apps = App.objects.all()
+    if max_price is not None:
+        apps = apps.filter(price__lte=max_price)
+    elif min_price is not None:
+        apps = apps.filter(price__gte=min_price)
+    return render(request, 'mainapp/home.html', {
+        'apps': apps,
+    })
+
+
+class AboutView(TemplateView):
+    template_name = 'mainapp/about.html'
+
+
+class AppListView(ListView):
+    model = App
+    template_name = 'mainapp/home.html'
+    context_object_name = 'apps'
+    paginate_by = 2
+    ordering = 'id'
+
+
+class AppDetailView(DetailView):
+    model = App
+    template_name = 'mainapp/app_detail.html'
+    context_object_name = 'app'
+    pk_url_kwarg = 'app_id'
 
 # Create your views here.
