@@ -4,6 +4,8 @@ from .models import App, Category, Review
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.generic import DetailView, TemplateView, ListView
+from .forms import ReviewForm
+from django.contrib import messages
 
 
 def about(request):
@@ -24,7 +26,17 @@ def add_review(request, app_id):
         review = form.save(commit=False)
         review.app = app
         review.save()
-        return redirect('main:app_detail', app_id=app.id)
+        return redirect(
+            'mainapp:app_detail',
+            app_id=app.id,
+            app_name=app.name
+        )
+    reviews = app.review_set.order_by('-created_at')
+    return render(request, 'mainapp/app_detail.html', {
+        'app': app,
+        'form': form,
+        'reviews': reviews,
+    })
 
 
 def free_apps(request):
@@ -139,5 +151,12 @@ class AppDetailView(DetailView):
     template_name = 'mainapp/app_detail.html'
     context_object_name = 'app'
     pk_url_kwarg = 'app_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        app = self.object
+        context['reviews'] = app.review_set.order_by('-created_at')
+        context['form'] = ReviewForm()
+        return context
 
 # Create your views here.

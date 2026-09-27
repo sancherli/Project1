@@ -11,6 +11,7 @@ urlpatterns = [
     path('new/', views.new, name='new'),
     path('', views.AppListView.as_view(), name='home'),
 
+    path('app/<int:app_id>/review/', views.add_review, name='add_review'),
     path('app/<int:app_id>/<str:app_name>/',views.AppDetailView.as_view(),name='app_detail'),
     path('category/<int:category_id>/<str:category_name>/',views.category_detail,name='category_detail'),
     path('api/app/<int:id>/',views.api_app_detail,name='api_app_detail'),

@@ -31,8 +31,11 @@ class Review(models.Model):
     comment = models.TextField()
     text = models.TextField()
     recommended = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} → {self.app.name}"
+
+
 
 # Create your models here.
