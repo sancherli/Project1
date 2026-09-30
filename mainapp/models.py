@@ -18,8 +18,9 @@ class App(models.Model):
         Category,
         on_delete=models.CASCADE,
         null=True,
-        blank=True
-    )
+        blank=True,
+        related_name='apps',
+        )
 
     def __str__(self):
         return self.name

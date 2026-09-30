@@ -27,29 +27,11 @@
 
 <p>Скачиваний: {{ app.downloads }}</p>
 
-<h2>Отзывы</h2>
-
 <p>Всего отзывов: {{ app.review_set.count }}</p>
-
-{% for review in app.review_set.all %}
-    <div class="review-card">
-        <h3>{{ review.name }}</h3>
-
-        <p>Оценка: {{ review.rating }}</p>
-        <p>Комментарий: {{ review.comment }}</p>
-
-        {% if review.recommended %}
-            <p>Рекомендует</p>
-        {% else %}
-            <p>Не рекомендует</p>
-        {% endif %}
-    </div>
-{% empty %}
-    <p>Отзывов пока нет</p>
-{% endfor %}
 
 <section>
     <h2>Отзывы ({{ reviews|length }})</h2>
+
     {% for review in reviews %}
         <article>
             <p>
@@ -60,7 +42,6 @@
             {% if review.comment %}
                 <p>{{ review.comment }}</p>
             {% endif %}
-
             <p>
                 {% if review.recommended %}
                     Рекомендует
@@ -88,7 +69,6 @@
         Отправить отзыв
     </button>
     </form>
-
 </section>
 
 {% endblock %}

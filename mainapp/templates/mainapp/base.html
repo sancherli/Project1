@@ -19,6 +19,28 @@
 
 <hr>
 
+<hr>
+
+<nav>
+    <strong>Категории:</strong>
+
+    {% for category in nav_categories %}
+        <a href="{% url 'mainapp:category_detail' category.id category.name %}">
+            {{ category.name }}
+        </a>
+        ({{ category.apps_count }})
+
+        {% if not forloop.last %}
+            ·
+        {% endif %}
+
+    {% empty %}
+        Категорий пока нет.
+    {% endfor %}
+</nav>
+
+<hr>
+
 {% block content %}
 
 {% endblock %}

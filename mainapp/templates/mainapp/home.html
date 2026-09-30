@@ -16,22 +16,6 @@
     <button type="submit">Найти</button>
 </form>
 
-<hr>
-
-<h2>Категории</h2>
-
-{% for category in categories %}
-    <p>
-        <a href="{% url 'mainapp:category_detail' category.id category.name %}">
-        {{ category.name }}
-        </a>
-    </p>
-{% empty %}
-    <p>Категорий пока нет.</p>
-{% endfor %}
-
-<hr>
-
 <h2>Приложение дня</h2>
 
 {% if app_of_day %}

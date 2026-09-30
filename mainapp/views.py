@@ -87,12 +87,10 @@ def home(request):
     paginator = Paginator(apps, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    categories = Category.objects.all()
     app_of_day = App.objects.order_by('-price').first()
     return render(request, 'mainapp/home.html', {
         'apps': page_obj,
         'page_obj': page_obj,
-        'categories': categories,
         'app_of_day': app_of_day,
         'q': q,
         'sort': sort,
