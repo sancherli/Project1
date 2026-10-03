@@ -18,4 +18,5 @@ urlpatterns = [
 
     path('cheap/', views.index,{'max_price': 10},name='cheap'),
     path('premium/',views.index,{'min_price': 15},name='premium'),
+    path('app/<int:app_id>/edit/',views.edit_apps,name='edit_app'),
 ]

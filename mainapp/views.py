@@ -6,6 +6,8 @@ from django.db.models import Q
 from django.views.generic import DetailView, TemplateView, ListView
 from .forms import ReviewForm
 from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 
 
 def about(request):
@@ -156,5 +158,45 @@ class AppDetailView(DetailView):
         context['reviews'] = app.review_set.order_by('-created_at')
         context['form'] = ReviewForm()
         return context
+
+
+
+@login_required
+def edit_apps(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    if request.method == 'POST':
+        if request.user.is_superuser:
+            form = ForSuperUserEditAppForm(
+                request.POST,
+                request.FILES,
+                instance=app,
+            )
+        else:
+            form = AppForm(
+                request.POST,
+                request.FILES,
+                instance=app,
+            )
+        if form.is_valid():
+            app = form.save()
+
+            return redirect(
+                'mainapp:app_detail',
+                app_id=app.id,
+                app_name=app.name,
+            )
+    else:
+        if request.user.is_superuser:
+            form = ForSuperUserEditAppForm(instance=app)
+        else:
+            form = AppForm(instance=app)
+    return render(
+        request,
+        'mainapp/edit_app.html',
+        {
+            'form': form,
+            'app': app,
+        }
+    )
 
 # Create your views here.

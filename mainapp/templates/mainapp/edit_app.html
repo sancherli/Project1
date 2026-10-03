@@ -1,0 +1,20 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Иконки{% endblock %}
+
+{% block content %}
+
+<form method="post"
+      action="{% url 'mainapp:edit_app' app.id %}"
+      enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Сохранить
+    </button>
+</form>
+
+{% endblock %}

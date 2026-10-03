@@ -71,4 +71,12 @@
     </form>
 </section>
 
+{% if app.icon %}
+    <img src="{{ app.icon.url }}"
+         alt="{{ app.name }}"
+         width="120">
+{% else %}
+    <p>Иконка не загружена.</p>
+{% endif %}
+
 {% endblock %}

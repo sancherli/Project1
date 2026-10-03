@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
@@ -20,8 +20,18 @@ class App(models.Model):
         null=True,
         blank=True,
         related_name='apps',
-        )
-
+    )
+    icon = models.ImageField(
+        upload_to='icons/',
+        blank=True,
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='apps',
+        null=True,
+        blank=True,
+    )
     def __str__(self):
         return self.name
 
@@ -36,7 +46,5 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.name} → {self.app.name}"
-
-
 
 # Create your models here.

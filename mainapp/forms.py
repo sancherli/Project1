@@ -1,5 +1,6 @@
 from django import forms
-from .models import Review
+from .models import App, Review
+from django.conf import settings
 
 
 class ReviewForm(forms.ModelForm):
@@ -27,3 +28,28 @@ class ReviewForm(forms.ModelForm):
                 'Оценка должна быть от 1 до 5.'
             )
         return rating
+
+
+class AppForm(forms.ModelForm):
+    class Meta:
+        model = App
+        fields = [
+            'name',
+            'description',
+            'price',
+            'category',
+            'icon',
+        ]
+
+
+class ForSuperUserEditAppForm(forms.ModelForm):
+    class Meta:
+        model = App
+        fields = [
+            'name',
+            'description',
+            'price',
+            'category',
+            'icon',
+            'author',
+        ]
