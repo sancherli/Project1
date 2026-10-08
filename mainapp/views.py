@@ -4,10 +4,13 @@ from .models import App, Category, Review
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.generic import DetailView, TemplateView, ListView
-from .forms import ReviewForm
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import ReviewForm, RegisterForm
+from django.contrib.auth.views import LoginView
 
 
 def about(request):
@@ -23,22 +26,33 @@ def reviews(request):
 @require_POST
 def add_review(request, app_id):
     app = get_object_or_404(App, id=app_id)
-    form = ReviewForm(request.POST)
+    data = request.POST.copy()
+    if request.user.is_authenticated:
+        data['name'] = request.user.username
+    form = ReviewForm(data)
     if form.is_valid():
         review = form.save(commit=False)
         review.app = app
         review.save()
+        messages.success(
+            request,
+            'Отзыв успешно добавлен.'
+        )
         return redirect(
             'mainapp:app_detail',
             app_id=app.id,
-            app_name=app.name
+            app_name=app.name,
         )
     reviews = app.review_set.order_by('-created_at')
-    return render(request, 'mainapp/app_detail.html', {
-        'app': app,
-        'form': form,
-        'reviews': reviews,
-    })
+    return render(
+        request,
+        'mainapp/app_detail.html',
+        {
+            'app': app,
+            'form': form,
+            'reviews': reviews,
+        }
+    )
 
 
 def free_apps(request):
@@ -165,31 +179,25 @@ class AppDetailView(DetailView):
 def edit_apps(request, app_id):
     app = get_object_or_404(App, id=app_id)
     if request.method == 'POST':
-        if request.user.is_superuser:
-            form = ForSuperUserEditAppForm(
-                request.POST,
-                request.FILES,
-                instance=app,
-            )
-        else:
-            form = AppForm(
-                request.POST,
-                request.FILES,
-                instance=app,
-            )
+        form = AppForm(
+            request.POST,
+            request.FILES,
+            instance=app,
+        )
         if form.is_valid():
             app = form.save()
 
+            messages.success(
+                request,
+                'Изменения успешно сохранены.'
+            )
             return redirect(
                 'mainapp:app_detail',
                 app_id=app.id,
                 app_name=app.name,
             )
     else:
-        if request.user.is_superuser:
-            form = ForSuperUserEditAppForm(instance=app)
-        else:
-            form = AppForm(instance=app)
+        form = AppForm(instance=app)
     return render(
         request,
         'mainapp/edit_app.html',
@@ -198,5 +206,39 @@ def edit_apps(request, app_id):
             'app': app,
         }
     )
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('mainapp:home')
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('mainapp:home')
+    else:
+        form = RegisterForm()
+
+    return render(
+        request,
+        'mainapp/register.html',
+        {
+            'form': form,
+        }
+    )
+
+
+class StoreLoginView(LoginView):
+    template_name = 'mainapp/login.html'
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            'Вы успешно вошли.'
+        )
+        return super().form_valid(form)
+
+
 
 # Create your views here.

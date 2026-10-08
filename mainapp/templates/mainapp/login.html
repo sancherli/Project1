@@ -1,0 +1,30 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+
+<h1>Вход</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+
+    <button type="submit">
+        Войти
+    </button>
+</form>
+
+<p>
+    Нет аккаунта?
+    <a href="{% url 'mainapp:register' %}">
+        Зарегистрироваться
+    </a>
+</p>
+
+{% endblock %}

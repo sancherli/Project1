@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LoginView, LogoutView
 
 app_name = 'mainapp'
 
@@ -19,4 +20,9 @@ urlpatterns = [
     path('cheap/', views.index,{'max_price': 10},name='cheap'),
     path('premium/',views.index,{'min_price': 15},name='premium'),
     path('app/<int:app_id>/edit/',views.edit_apps,name='edit_app'),
+
+    path('', views.index, name='index'),
+    path('register/',views.register,name='register'),
+    path('login/',views.StoreLoginView.as_view(),name='login'),
+    path('logout/',LogoutView.as_view(),name='logout'),
 ]

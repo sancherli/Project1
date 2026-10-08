@@ -58,19 +58,6 @@
     {% endfor %}
 </section>
 
-<section>
-    <h2>Оставить отзыв</h2>
-
-    <form method="post" action="{% url 'mainapp:add_review' app.id %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-
-    <button type="submit">
-        Отправить отзыв
-    </button>
-    </form>
-</section>
-
 {% if app.icon %}
     <img src="{{ app.icon.url }}"
          alt="{{ app.name }}"
@@ -78,5 +65,35 @@
 {% else %}
     <p>Иконка не загружена.</p>
 {% endif %}
+
+<form method="post"
+      action="{% url 'mainapp:add_review' app.id %}">
+    {% csrf_token %}
+    {% if not request.user.is_authenticated %}
+        <p>
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {{ form.name.errors }}
+        </p>
+    {% endif %}
+    <p>
+        {{ form.rating.label_tag }}
+        {{ form.rating }}
+        {{ form.rating.errors }}
+    </p>
+    <p>
+        {{ form.comment.label_tag }}
+        {{ form.comment }}
+        {{ form.comment.errors }}
+    </p>
+    <p>
+        {{ form.recommended.label_tag }}
+        {{ form.recommended }}
+        {{ form.recommended.errors }}
+    </p>
+    <button type="submit">
+        Отправить отзыв
+    </button>
+</form>
 
 {% endblock %}

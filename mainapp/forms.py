@@ -1,6 +1,8 @@
 from django import forms
 from .models import App, Review
 from django.conf import settings
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 
 class ReviewForm(forms.ModelForm):
@@ -53,3 +55,19 @@ class ForSuperUserEditAppForm(forms.ModelForm):
             'icon',
             'author',
         ]
+
+
+class RegisterForm(UserCreationForm):
+    username = forms.CharField(label='Логин')
+    password1 = forms.CharField(
+        label='Пароль',
+        widget=forms.PasswordInput
+    )
+    password2 = forms.CharField(
+        label='Повторите пароль',
+        widget=forms.PasswordInput
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'password1', 'password2']
