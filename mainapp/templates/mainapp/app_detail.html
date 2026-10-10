@@ -15,6 +15,31 @@
     {% endif %}
 </p>
 
+<p>
+    Автор:
+    {% if app.author %}
+        {{ app.author.username }}
+    {% else %}
+        не указан
+    {% endif %}
+</p>
+
+{% if request.user.is_authenticated %}
+    {% if request.user.is_staff %}
+        <p>
+            <a href="{% url 'mainapp:edit_app' app.id %}">
+                Редактировать
+            </a>
+        </p>
+    {% elif app.author_id == request.user.id %}
+        <p>
+            <a href="{% url 'mainapp:edit_app' app.id %}">
+                Редактировать
+            </a>
+        </p>
+    {% endif %}
+{% endif %}
+
 {% if app.price == 0 %}
     <p>Цена: Бесплатно</p>
 {% else %}

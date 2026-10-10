@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from .forms import ReviewForm, RegisterForm
+from .forms import ReviewForm, RegisterForm, AppForm, ForSuperUserEditAppForm
 from django.contrib.auth.views import LoginView
 
 
@@ -159,12 +159,22 @@ class AppListView(ListView):
     paginate_by = 2
     ordering = 'id'
 
+    def get_queryset(self):
+        apps = App.objects.select_related('author', 'category')
+        q = self.request.GET.get('q', '')
+        if q:
+            apps = apps.filter(name__icontains=q)
+        return apps.order_by('id')
+
 
 class AppDetailView(DetailView):
     model = App
     template_name = 'mainapp/app_detail.html'
     context_object_name = 'app'
     pk_url_kwarg = 'app_id'
+
+    def get_queryset(self):
+        return App.objects.select_related('author', 'category')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -174,10 +184,22 @@ class AppDetailView(DetailView):
         return context
 
 
-
 @login_required
 def edit_apps(request, app_id):
     app = get_object_or_404(App, id=app_id)
+    if not (
+        request.user.is_staff
+        or app.author_id == request.user.id
+    ):
+        messages.error(
+            request,
+            'Редактировать приложение может только его автор или сотрудник.'
+        )
+        return redirect(
+            'mainapp:app_detail',
+            app_id=app.id,
+            app_name=app.name,
+        )
     if request.method == 'POST':
         form = AppForm(
             request.POST,
@@ -185,11 +207,10 @@ def edit_apps(request, app_id):
             instance=app,
         )
         if form.is_valid():
-            app = form.save()
-
+            form.save()
             messages.success(
                 request,
-                'Изменения успешно сохранены.'
+                'Изменения сохранены.'
             )
             return redirect(
                 'mainapp:app_detail',
@@ -240,5 +261,43 @@ class StoreLoginView(LoginView):
         return super().form_valid(form)
 
 
+@login_required
+def add_app(request):
+    if request.method == 'POST':
+        form = AppForm(request.POST, request.FILES)
+        if form.is_valid():
+            app = form.save(commit=False)
+            app.author = request.user
+            app.save()
+            return redirect(
+                'mainapp:app_detail',
+                app_id=app.id,
+                app_name=app.name,
+            )
+    else:
+        form = AppForm()
+    return render(
+        request,
+        'mainapp/add_app.html',
+        {
+            'form': form,
+        }
+    )
+
+@login_required
+def my_apps(request):
+    apps = (
+        App.objects
+        .filter(author=request.user)
+        .select_related('author', 'category')
+        .order_by('-created_at')
+    )
+    return render(
+        request,
+        'mainapp/my_apps.html',
+        {
+            'apps': apps,
+        }
+    )
 
 # Create your views here.

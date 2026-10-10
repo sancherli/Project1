@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -39,8 +38,11 @@
     {% endfor %}
 </nav>
 
-  {% if request.user.is_authenticated %}
+{% if request.user.is_authenticated %}
     <span>{{ request.user.username }}</span>
+    <a href="{% url 'mainapp:my_apps' %}">
+        Мои приложения
+    </a>
     <form method="post"
           action="{% url 'mainapp:logout' %}"
           style="display:inline;">

@@ -53,7 +53,6 @@ class ForSuperUserEditAppForm(forms.ModelForm):
             'price',
             'category',
             'icon',
-            'author',
         ]
 
 
