@@ -279,10 +279,9 @@ def add_app(request):
     return render(
         request,
         'mainapp/add_app.html',
-        {
-            'form': form,
-        }
+        {'form': form}
     )
+
 
 @login_required
 def my_apps(request):

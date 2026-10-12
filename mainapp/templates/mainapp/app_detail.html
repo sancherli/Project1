@@ -25,18 +25,10 @@
 </p>
 
 {% if request.user.is_authenticated %}
-    {% if request.user.is_staff %}
-        <p>
-            <a href="{% url 'mainapp:edit_app' app.id %}">
-                Редактировать
-            </a>
-        </p>
-    {% elif app.author_id == request.user.id %}
-        <p>
-            <a href="{% url 'mainapp:edit_app' app.id %}">
-                Редактировать
-            </a>
-        </p>
+    {% if request.user.is_staff or app.author_id == request.user.id %}
+        <a href="{% url 'mainapp:edit_app' app.id %}">
+            Редактировать
+        </a>
     {% endif %}
 {% endif %}
 

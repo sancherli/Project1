@@ -12,9 +12,9 @@
     <div class="app-card">
 
         <h2>
-            <a href="{% url 'mainapp:app_detail' app.id %}">
-                {{ app.name }}
-            </a>
+           <a href="{% url 'mainapp:app_detail' app.id app.name %}">
+            {{ app.name }}
+           </a>
         </h2>
 
         <p>Категория: {{ app.category }}</p>
