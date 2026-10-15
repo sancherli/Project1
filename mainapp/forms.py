@@ -1,6 +1,7 @@
 from django import forms
 from .models import App, Review
 from django.conf import settings
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -58,6 +59,10 @@ class ForSuperUserEditAppForm(forms.ModelForm):
 
 class RegisterForm(UserCreationForm):
     username = forms.CharField(label='Логин')
+    email = forms.EmailField(
+        label='Электронная почта',
+        required=True
+    )
     password1 = forms.CharField(
         label='Пароль',
         widget=forms.PasswordInput
@@ -66,7 +71,22 @@ class RegisterForm(UserCreationForm):
         label='Повторите пароль',
         widget=forms.PasswordInput
     )
-
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
+        fields = [
+            'username',
+            'email',
+            'password1',
+            'password2',
+        ]
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                'Пользователь с такой электронной почтой уже существует.'
+            )
+
+        return email
+
+

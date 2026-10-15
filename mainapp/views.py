@@ -188,13 +188,15 @@ class AppDetailView(DetailView):
 def edit_apps(request, app_id):
     app = get_object_or_404(App, id=app_id)
     if not (
-        request.user.is_staff
+        request.user.has_perm('mainapp.change_app')
+        or request.user.is_staff
         or app.author_id == request.user.id
     ):
         messages.error(
             request,
-            'Редактировать приложение может только его автор или сотрудник.'
+            'У вас нет права редактировать это приложение.'
         )
+
         return redirect(
             'mainapp:app_detail',
             app_id=app.id,
@@ -234,14 +236,17 @@ def register(request):
         return redirect('mainapp:home')
     if request.method == 'POST':
         form = RegisterForm(request.POST)
-
         if form.is_valid():
             user = form.save()
             login(request, user)
+
+            messages.success(
+                request,
+                'Регистрация прошла успешно.'
+            )
             return redirect('mainapp:home')
     else:
         form = RegisterForm()
-
     return render(
         request,
         'mainapp/register.html',

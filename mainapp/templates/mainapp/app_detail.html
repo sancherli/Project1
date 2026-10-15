@@ -25,7 +25,7 @@
 </p>
 
 {% if request.user.is_authenticated %}
-    {% if request.user.is_staff or app.author_id == request.user.id %}
+    {% if perms.mainapp.change_app or request.user.is_staff or app.author_id == request.user.id %}
         <a href="{% url 'mainapp:edit_app' app.id %}">
             Редактировать
         </a>

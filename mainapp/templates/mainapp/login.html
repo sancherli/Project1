@@ -5,7 +5,11 @@
 {% block content %}
 
 <h1>Вход</h1>
-
+<p>
+    <a href="{% url 'mainapp:password_reset' %}">
+        Забыли пароль?
+    </a>
+</p>
 <form method="post">
     {% csrf_token %}
 
