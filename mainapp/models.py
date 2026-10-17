@@ -33,6 +33,11 @@ class App(models.Model):
         blank=True,
         related_name='apps',
     )
+    favorited_by = models.ManyToManyField(
+        User,
+        related_name='favorite_apps',
+        blank=True,
+    )
 
     def __str__(self):
         return self.name

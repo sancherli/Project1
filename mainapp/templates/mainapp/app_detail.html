@@ -25,11 +25,31 @@
 </p>
 
 {% if request.user.is_authenticated %}
-    {% if perms.mainapp.change_app or request.user.is_staff or app.author_id == request.user.id %}
-        <a href="{% url 'mainapp:edit_app' app.id %}">
-            Редактировать
-        </a>
-    {% endif %}
+
+    <form method="post"
+          action="{% url 'mainapp:toggle_favorite' app.id %}"
+          style="display:inline;">
+
+        {% csrf_token %}
+
+        {% if is_favorite %}
+            <button type="submit">
+                Убрать из избранного
+            </button>
+        {% else %}
+            <button type="submit">
+                Добавить в избранное
+            </button>
+        {% endif %}
+
+    </form>
+
+{% else %}
+
+    <a href="{% url 'mainapp:login' %}?next={% url 'mainapp:app_detail' app.id app.name %}">
+        Войдите, чтобы добавить в избранное
+    </a>
+
 {% endif %}
 
 {% if app.price == 0 %}

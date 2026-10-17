@@ -9,6 +9,7 @@
 </head>
 
 <nav>
+    <a href="{% url 'mainapp:login' %}">Войти</a>
     <a href="{% url 'mainapp:home' %}">Главная</a>
     <a href="{% url 'mainapp:free' %}">Бесплатные</a>
     <a href="{% url 'mainapp:top' %}">Топ по цене</a>
@@ -39,19 +40,34 @@
 </nav>
 
 {% if request.user.is_authenticated %}
+
     <span>{{ request.user.username }}</span>
+
     <a href="{% url 'mainapp:my_apps' %}">
         Мои приложения
     </a>
+
+    <a href="{% url 'mainapp:favorites' %}">
+        Избранное ({{ request.user.favorite_apps.count }})
+    </a>
+
     <form method="post"
           action="{% url 'mainapp:logout' %}"
           style="display:inline;">
         {% csrf_token %}
         <button type="submit">Выйти</button>
     </form>
+
 {% else %}
-    <a href="{% url 'mainapp:login' %}">Войти</a>
-    <a href="{% url 'mainapp:register' %}">Регистрация</a>
+
+    <a href="{% url 'mainapp:login' %}">
+        Войти
+    </a>
+
+    <a href="{% url 'mainapp:register' %}">
+        Регистрация
+    </a>
+
 {% endif %}
 
     {% if messages %}

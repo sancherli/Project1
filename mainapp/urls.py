@@ -16,6 +16,7 @@ urlpatterns = [
 
     path('app/<int:app_id>/review/', views.add_review, name='add_review'),
     path('app/<int:app_id>/edit/',views.edit_apps,name='edit_app'),
+    path('app/<int:app_id>/favorite/',views.toggle_favorite,name='toggle_favorite'),
     path('app/<int:app_id>/<str:app_name>/',views.AppDetailView.as_view(),name='app_detail'),
     path('category/<int:category_id>/<str:category_name>/',views.category_detail,name='category_detail'),
 
@@ -28,6 +29,8 @@ urlpatterns = [
     path('login/',views.StoreLoginView.as_view(),name='login'),
     path('logout/',LogoutView.as_view(),name='logout'),
     path('my-apps/',views.my_apps,name='my_apps'),
+
+    path('favorites/',views.favorites,name='favorites'),
 
     path('password-reset/',auth_views.PasswordResetView.as_view(template_name='mainapp/password_reset_form.html',email_template_name='mainapp/password_reset_email.html',subject_template_name='mainapp/password_reset_subject.txt',success_url=reverse_lazy('mainapp:password_reset_done'),),name='password_reset',),
 

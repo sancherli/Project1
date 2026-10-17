@@ -11,6 +11,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import ReviewForm, RegisterForm, AppForm, ForSuperUserEditAppForm
 from django.contrib.auth.views import LoginView
+from urllib.parse import urlencode
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 
 
 def about(request):
@@ -44,16 +47,15 @@ def add_review(request, app_id):
             app_name=app.name,
         )
     reviews = app.review_set.order_by('-created_at')
-    return render(
-        request,
-        'mainapp/app_detail.html',
-        {
-            'app': app,
-            'form': form,
-            'reviews': reviews,
-        }
-    )
-
+    return render(request, 'mainapp/app_detail.html', {
+        'app': app,
+        'form': form,
+        'reviews': reviews,
+        'is_favorite': (
+                request.user.is_authenticated
+                and app.favorited_by.filter(id=request.user.id).exists()
+        ),
+    })
 
 def free_apps(request):
     apps = App.objects.filter(price=0)
@@ -181,6 +183,10 @@ class AppDetailView(DetailView):
         app = self.object
         context['reviews'] = app.review_set.order_by('-created_at')
         context['form'] = ReviewForm()
+        context['is_favorite'] = (
+            self.request.user.is_authenticated
+            and app.favorited_by.filter(id=self.request.user.id).exists()
+        )
         return context
 
 
@@ -258,6 +264,7 @@ def register(request):
 
 class StoreLoginView(LoginView):
     template_name = 'mainapp/login.html'
+
     def form_valid(self, form):
         messages.success(
             self.request,
@@ -299,6 +306,47 @@ def my_apps(request):
     return render(
         request,
         'mainapp/my_apps.html',
+        {
+            'apps': apps,
+        }
+    )
+
+
+@require_POST
+def toggle_favorite(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    detail_url = reverse(
+        'mainapp:app_detail',
+        kwargs={
+            'app_id': app.id,
+            'app_name': app.name,
+        }
+    )
+    if not request.user.is_authenticated:
+        login_url = reverse('mainapp:login')
+        query = urlencode({'next': detail_url})
+        return redirect(f'{login_url}?{query}')
+
+    if app.favorited_by.filter(id=request.user.id).exists():
+        app.favorited_by.remove(request.user)
+        messages.success(request, 'Удалено из избранного.')
+    else:
+        app.favorited_by.add(request.user)
+        messages.success(request, 'Добавлено в избранное.')
+
+    return redirect(detail_url)
+
+
+@login_required
+def favorites(request):
+    apps = (
+        request.user.favorite_apps
+        .select_related('author', 'category')
+        .order_by('-created_at')
+    )
+    return render(
+        request,
+        'mainapp/favorites.html',
         {
             'apps': apps,
         }

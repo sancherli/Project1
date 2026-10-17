@@ -1,0 +1,38 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Избранное{% endblock %}
+
+{% block content %}
+
+<h1>Избранное</h1>
+
+{% for app in apps %}
+
+    <div class="app-card">
+        {% if app.icon %}
+            <img
+                src="{{ app.icon.url }}"
+                alt="{{ app.name }}"
+                width="60"
+            >
+        {% endif %}
+        <h3>
+            <a href="{% url 'mainapp:app_detail' app.id app.name %}">
+                {{ app.name }}
+            </a>
+        </h3>
+        <p>Цена: {{ app.price }} $</p>
+
+        {% if app.author %}
+            <p>Автор: {{ app.author.username }}</p>
+        {% else %}
+            <p>Автор: не указан</p>
+        {% endif %}
+    </div>
+    <hr>
+
+{% empty %}
+    <p>В избранном пока ничего нет.</p>
+{% endfor %}
+
+{% endblock %}

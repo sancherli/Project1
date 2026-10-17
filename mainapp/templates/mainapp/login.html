@@ -10,18 +10,15 @@
         Забыли пароль?
     </a>
 </p>
+
 <form method="post">
     {% csrf_token %}
 
     {{ form.as_p }}
 
-    {% if next %}
-        <input type="hidden" name="next" value="{{ next }}">
-    {% endif %}
+    <input type="hidden" name="next" value="{{ next|default:'' }}">
 
-    <button type="submit">
-        Войти
-    </button>
+    <button type="submit">Войти</button>
 </form>
 
 <p>
