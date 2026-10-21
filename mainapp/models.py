@@ -22,6 +22,17 @@ class App(models.Model):
         blank=True,
         related_name='apps',
     )
+    rating_avg = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        default=0,
+        editable=False,
+    )
+
+    rating_count = models.PositiveIntegerField(
+        default=0,
+        editable=False,
+    )
     icon = models.ImageField(
         upload_to='icons/',
         blank=True,

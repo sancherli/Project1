@@ -47,15 +47,21 @@ def add_review(request, app_id):
             app_name=app.name,
         )
     reviews = app.review_set.order_by('-created_at')
-    return render(request, 'mainapp/app_detail.html', {
-        'app': app,
-        'form': form,
-        'reviews': reviews,
-        'is_favorite': (
+    return render(
+        request,
+        'mainapp/app_detail.html',
+        {
+            'app': app,
+            'form': form,
+            'reviews': reviews,
+            'is_favorite': (
                 request.user.is_authenticated
-                and app.favorited_by.filter(id=request.user.id).exists()
-        ),
-    })
+                and app.favorited_by.filter(
+                    id=request.user.id
+                ).exists()
+            ),
+        }
+    )
 
 def free_apps(request):
     apps = App.objects.filter(price=0)

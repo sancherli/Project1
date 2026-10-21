@@ -25,7 +25,6 @@
 </p>
 
 {% if request.user.is_authenticated %}
-
     <form method="post"
           action="{% url 'mainapp:toggle_favorite' app.id %}"
           style="display:inline;">
@@ -52,6 +51,16 @@
 
 {% endif %}
 
+{% if app.rating_count > 0 %}
+    <p>
+        Средняя оценка: {{ app.rating_avg }} из 5
+        (отзывов: {{ app.rating_count }})
+    </p>
+{% else %}
+    <p>Оценок пока нет.</p>
+{% endif %}
+<h2>Отзывы ({{ app.rating_count }})</h2>
+
 {% if app.price == 0 %}
     <p>Цена: Бесплатно</p>
 {% else %}
@@ -69,13 +78,12 @@
 <section>
     <h2>Отзывы ({{ reviews|length }})</h2>
 
-    {% for review in reviews %}
+        {% for review in reviews %}
         <article>
             <p>
                 <strong>{{ review.name }}</strong>
                 — оценка: {{ review.rating }}/5
             </p>
-
             {% if review.comment %}
                 <p>{{ review.comment }}</p>
             {% endif %}
@@ -94,7 +102,6 @@
         <p>Отзывов пока нет. Будьте первым!</p>
     {% endfor %}
 </section>
-
 {% if app.icon %}
     <img src="{{ app.icon.url }}"
          alt="{{ app.name }}"
@@ -102,6 +109,17 @@
 {% else %}
     <p>Иконка не загружена.</p>
 {% endif %}
+
+<div class="app-card">
+{% if app.rating_count > 0 %}
+    <p>
+        Средняя оценка: {{ app.rating_avg }} из 5
+        (отзывов: {{ app.rating_count }})
+    </p>
+{% else %}
+    <p>Оценок пока нет.</p>
+{% endif %}
+</div>
 
 <form method="post"
       action="{% url 'mainapp:add_review' app.id %}">

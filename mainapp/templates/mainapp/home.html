@@ -19,7 +19,8 @@
 <h2>Список приложений</h2>
 
 {% for app in apps %}
-    <div class="app-card">
+
+<div class="app-card">
 
         {% if app.icon %}
             <img
@@ -62,6 +63,17 @@
                 не указан
             {% endif %}
         </p>
+
+        <div class="app-card">
+            {% if app.rating_count > 0 %}
+        <p>
+            Оценка: {{ app.rating_avg }} из 5
+            ({{ app.rating_count }})
+        </p>
+        {% else %}
+        <p>Оценок пока нет.</p>
+        {% endif %}
+        </div>
 
     </div>
 
