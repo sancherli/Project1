@@ -1,4 +1,5 @@
 {% extends 'mainapp/base.html' %}
+{% load store_tags %}
 
 {% block title %}Главная{% endblock %}
 
@@ -64,23 +65,22 @@
             {% endif %}
         </p>
 
-        <div class="app-card">
-            {% if app.rating_count > 0 %}
+       <div class="app-card">
+    {% if app.rating_count > 0 %}
         <p>
-            Оценка: {{ app.rating_avg }} из 5
-            ({{ app.rating_count }})
+            Средняя оценка:
+                {{ app.rating_avg|stars }}
+                ({{ app.rating_count }} отзыва)
         </p>
-        {% else %}
+    {% else %}
         <p>Оценок пока нет.</p>
-        {% endif %}
-        </div>
+    {% endif %}
+</div>
 
-    </div>
-
-    <hr>
+<hr>
 
 {% empty %}
-    <p>Приложения не найдены.</p>
+    <p>Приложений пока нет.</p>
 {% endfor %}
 
 

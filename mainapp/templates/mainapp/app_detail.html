@@ -1,4 +1,5 @@
 {% extends 'mainapp/base.html' %}
+{% load store_tags %}
 
 {% block title %}{{ app.name }}{% endblock %}
 
@@ -53,8 +54,9 @@
 
 {% if app.rating_count > 0 %}
     <p>
-        Средняя оценка: {{ app.rating_avg }} из 5
-        (отзывов: {{ app.rating_count }})
+        Средняя оценка:
+            {{ app.rating_avg|stars }}
+            ({{ app.rating_count }} отзыва)
     </p>
 {% else %}
     <p>Оценок пока нет.</p>
@@ -82,7 +84,7 @@
         <article>
             <p>
                 <strong>{{ review.name }}</strong>
-                — оценка: {{ review.rating }}/5
+                — оценка: {{ review.rating|stars }}
             </p>
             {% if review.comment %}
                 <p>{{ review.comment }}</p>
