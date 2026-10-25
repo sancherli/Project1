@@ -39,5 +39,9 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='mainapp/password_reset_confirm.html',success_url=reverse_lazy('mainapp:password_reset_complete'),),name='password_reset_confirm',),
 
     path('reset/complete/',auth_views.PasswordResetCompleteView.as_view(template_name='mainapp/password_reset_complete.html',),name='password_reset_complete',),
+
+    path('app/<int:app_id>/<str:app_name>/',views.AppDetailView.as_view(),name='app_detail'),
+
+    path('bulk-discount/',views.bulk_discount,name='bulk_discount',),
 ]
 

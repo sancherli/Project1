@@ -14,6 +14,9 @@ from django.contrib.auth.views import LoginView
 from urllib.parse import urlencode
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from decimal import Decimal
+from django.db.models import F, DecimalField, ExpressionWrapper
+from django.shortcuts import redirect, render
 
 
 def about(request):
@@ -287,11 +290,11 @@ def add_app(request):
             app = form.save(commit=False)
             app.author = request.user
             app.save()
-            return redirect(
+            return redirect(app.get_absolute_url(
                 'mainapp:app_detail',
                 app_id=app.id,
                 app_name=app.name,
-            )
+            ))
     else:
         form = AppForm()
     return render(
@@ -356,6 +359,42 @@ def favorites(request):
         {
             'apps': apps,
         }
+    )
+
+
+@login_required
+def bulk_discount(request):
+    can_bulk_edit = (
+        request.user.is_staff
+        or request.user.has_perm('mainapp.change_app')
+    )
+    if not can_bulk_edit:
+        messages.error(
+            request,
+            'У вас нет права выполнять массовое изменение.'
+        )
+        return redirect('mainapp:home')
+    if request.method == 'POST':
+        new_price = ExpressionWrapper(
+            F('price') * Decimal('0.90'),
+            output_field=DecimalField(
+                max_digits=10,
+                decimal_places=2,
+            )
+        )
+        updated = (
+            App.objects
+            .filter(price__gt=0)
+            .update(price=new_price)
+        )
+        messages.success(
+            request,
+            f'Скидка 10% применена. Обновлено приложений: {updated}.'
+        )
+        return redirect('mainapp:bulk_discount')
+    return render(
+        request,
+        'mainapp/bulk_discount.html',
     )
 
 # Create your views here.

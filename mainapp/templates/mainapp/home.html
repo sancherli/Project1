@@ -34,7 +34,7 @@
         {% endif %}
 
         <h3>
-            <a href="{% url 'mainapp:app_detail' app.id app.name %}">
+            <a href="{{ app.get_absolute_url }}">
                 {{ app.name }}
             </a>
         </h3>
@@ -44,7 +44,7 @@
         {% if app.price == 0 %}
             <p>Цена: Бесплатно</p>
         {% else %}
-            <p>Цена: {{ app.price }} $</p>
+            <p>Цена: {{ app.get_price_label }} $</p>
         {% endif %}
 
         <p>{{ app.description|truncatechars:100 }}</p>

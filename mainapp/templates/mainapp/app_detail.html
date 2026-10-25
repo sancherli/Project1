@@ -64,9 +64,9 @@
 <h2>Отзывы ({{ app.rating_count }})</h2>
 
 {% if app.price == 0 %}
-    <p>Цена: Бесплатно</p>
+    <p>Цена: 150.00 $</p>
 {% else %}
-    <p>Цена: {{ app.price }} $</p>
+    <p>Цена: {{ app.get_price_label }} $</p>
 {% endif %}
 
 <p>Описание: {{ app.description }}</p>
@@ -123,16 +123,19 @@
 {% endif %}
 </div>
 
-<form method="post"
-      action="{% url 'mainapp:add_review' app.id %}">
-    {% csrf_token %}
-    {% if not request.user.is_authenticated %}
-        <p>
-            {{ form.name.label_tag }}
-            {{ form.name }}
-            {{ form.name.errors }}
-        </p>
+{% if request.user.is_authenticated %}
+    {% if perms.mainapp.change_app or request.user.is_staff or app.author_id == request.user.id %}
+        <a href="{% url 'mainapp:edit_app' app.id %}">
+            Редактировать
+        </a>
     {% endif %}
+{% endif %}
+
+<p>
+    {{ form.name.label_tag }}
+    {{ form.name }}
+    {{ form.name.errors }}
+</p>
     <p>
         {{ form.rating.label_tag }}
         {{ form.rating }}

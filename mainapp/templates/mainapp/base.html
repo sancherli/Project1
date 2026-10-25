@@ -51,6 +51,12 @@
         Избранное ({{ request.user.favorite_apps.count }})
     </a>
 
+    {% if request.user.is_staff or perms.mainapp.change_app %}
+        <a href="{% url 'mainapp:bulk_discount' %}">
+            Массовая скидка
+        </a>
+    {% endif %}
+
     <form method="post"
           action="{% url 'mainapp:logout' %}"
           style="display:inline;">

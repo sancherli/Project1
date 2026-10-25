@@ -1,0 +1,24 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Массовая скидка{% endblock %}
+
+{% block content %}
+
+<h1>Массовая скидка</h1>
+
+<p>
+    Операция уменьшает цену всех платных приложений на 10%.
+</p>
+
+<p>
+    Повторное нажатие применит скидку ещё раз к уже уменьшенным ценам.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">
+        Применить скидку 10%
+    </button>
+</form>
+
+{% endblock %}
