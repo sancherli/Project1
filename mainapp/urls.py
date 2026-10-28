@@ -43,5 +43,7 @@ urlpatterns = [
     path('app/<int:app_id>/<str:app_name>/',views.AppDetailView.as_view(),name='app_detail'),
 
     path('bulk-discount/',views.bulk_discount,name='bulk_discount',),
+
+    path('category/<int:category_id>/merge/',views.merge_category,name='merge_category',),
 ]
 

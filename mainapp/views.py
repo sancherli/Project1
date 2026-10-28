@@ -17,7 +17,7 @@ from django.urls import reverse
 from decimal import Decimal
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.shortcuts import redirect, render
-
+from django.db import transaction
 
 def about(request):
     return render(request, 'mainapp/about.html')
@@ -67,13 +67,13 @@ def add_review(request, app_id):
     )
 
 def free_apps(request):
-    apps = App.objects.filter(price=0)
+    apps = App.objects.free()
     return render(request, 'mainapp/free.html', {
         'apps': apps
     })
 
 def top_apps(request):
-    apps = App.objects.filter(price__gt=0).order_by('-price')[:10]
+    apps = App.objects.paid().order_by('-price')[:10]
     return render(request, 'mainapp/top.html', {
         'apps': apps
     })
@@ -383,8 +383,7 @@ def bulk_discount(request):
             )
         )
         updated = (
-            App.objects
-            .filter(price__gt=0)
+            App.objects.paid()
             .update(price=new_price)
         )
         messages.success(
@@ -395,6 +394,59 @@ def bulk_discount(request):
     return render(
         request,
         'mainapp/bulk_discount.html',
+    )
+
+
+@login_required
+def merge_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    can_bulk_edit = (
+        request.user.is_staff
+        or request.user.has_perm('mainapp.change_app')
+    )
+    if not can_bulk_edit:
+        messages.error(
+            request,
+            'У вас нет права выполнять эту операцию.'
+        )
+        return redirect('mainapp:home')
+    other_categories = Category.objects.exclude(id=category.id)
+    if request.method == 'POST':
+        target_id = request.POST.get('target_category')
+
+        target = get_object_or_404(
+            Category,
+            id=target_id
+        )
+        if target.id == category.id:
+            messages.error(
+                request,
+                'Нельзя перенести приложения в ту же категорию.'
+            )
+            return redirect(
+                'mainapp:merge_category',
+                category_id=category.id
+            )
+        with transaction.atomic():
+            App.objects.filter(
+                category=category
+            ).update(
+                category=target
+            )
+
+            category.delete()
+        messages.success(
+            request,
+            'Приложения перенесены, исходная категория удалена.'
+        )
+        return redirect('mainapp:home')
+    return render(
+        request,
+        'mainapp/merge_category.html',
+        {
+            'category': category,
+            'other_categories': other_categories,
+        }
     )
 
 # Create your views here.

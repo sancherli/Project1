@@ -12,6 +12,14 @@ class Category(models.Model):
         return self.name
 
 
+class AppQuerySet(models.QuerySet):
+    def free(self):
+        return self.filter(price=0)
+
+    def paid(self):
+        return self.filter(price__gt=0)
+
+
 class App(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -28,6 +36,8 @@ class App(models.Model):
             ),
         ],
     )
+    objects = models.Manager.from_queryset(AppQuerySet)()
+
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,

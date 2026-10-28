@@ -1,0 +1,37 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Перенос категории{% endblock %}
+
+{% block content %}
+
+<h1>Перенос категории</h1>
+
+<p>
+    Все приложения из категории
+    <strong>{{ category.name }}</strong>
+    будут перенесены в другую категорию.
+</p>
+
+<p>
+    После переноса исходная категория будет удалена.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label for="target_category">Куда перенести:</label>
+
+    <select name="target_category" id="target_category" required>
+        {% for item in other_categories %}
+            <option value="{{ item.id }}">
+                {{ item.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">
+        Перенести и удалить категорию
+    </button>
+</form>
+
+{% endblock %}
