@@ -1,0 +1,43 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Мои покупки{% endblock %}
+
+{% block content %}
+
+<h1>Мои покупки</h1>
+
+{% for purchase in purchases %}
+
+    <div>
+        <h3>
+            <a href="{{ purchase.app.get_absolute_url }}">
+                {{ purchase.app.name }}
+            </a>
+        </h3>
+
+        <p>
+            Цена покупки:
+            {{ purchase.paid_price|floatformat:2 }} $
+        </p>
+
+        <p>
+            Дата:
+            {{ purchase.purchased_at|date:"d.m.Y H:i" }}
+        </p>
+    </div>
+
+    <hr>
+
+{% empty %}
+
+    <p>У вас пока нет покупок.</p>
+
+{% endfor %}
+
+<p>
+    <strong>
+        Итого: {{ total|floatformat:2 }} $
+    </strong>
+</p>
+
+{% endblock %}

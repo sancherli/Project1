@@ -124,6 +124,28 @@
 </div>
 
 {% if request.user.is_authenticated %}
+
+    {% if purchase %}
+        <p>
+            Куплено: {{ purchase.purchased_at|date:"d.m.Y H:i" }}
+        </p>
+        <p>
+            Цена покупки: {{ purchase.paid_price }} $
+        </p>
+
+    {% elif app.author_id != request.user.id %}
+        <form method="post"
+              action="{% url 'mainapp:buy_app' app.id %}"
+              style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">
+                Купить
+            </button>
+        </form>
+    {% endif %}
+
+{% endif %}
+{% if request.user.is_authenticated %}
     {% if perms.mainapp.change_app or request.user.is_staff or app.author_id == request.user.id %}
         <a href="{% url 'mainapp:edit_app' app.id %}">
             Редактировать

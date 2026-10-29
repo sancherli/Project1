@@ -12,12 +12,16 @@ from django.contrib.auth import login
 from .forms import ReviewForm, RegisterForm, AppForm, ForSuperUserEditAppForm
 from django.contrib.auth.views import LoginView
 from urllib.parse import urlencode
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from decimal import Decimal
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.shortcuts import redirect, render
 from django.db import transaction
+from decimal import Decimal
+from django.db.models import Sum
+from django.views.decorators.http import require_POST
+from .models import App, Purchase
 
 def about(request):
     return render(request, 'mainapp/about.html')
@@ -44,12 +48,16 @@ def add_review(request, app_id):
             request,
             'Отзыв успешно добавлен.'
         )
-        return redirect(
-            'mainapp:app_detail',
-            app_id=app.id,
-            app_name=app.name,
-        )
+        return redirect(app.get_absolute_url())
+
     reviews = app.review_set.order_by('-created_at')
+    if request.user.is_authenticated:
+        purchase = Purchase.objects.filter(
+            user=request.user,
+            app=app,
+        ).first()
+    else:
+        purchase = None
     return render(
         request,
         'mainapp/app_detail.html',
@@ -63,6 +71,7 @@ def add_review(request, app_id):
                     id=request.user.id
                 ).exists()
             ),
+            'purchase': purchase,
         }
     )
 
@@ -196,6 +205,14 @@ class AppDetailView(DetailView):
             self.request.user.is_authenticated
             and app.favorited_by.filter(id=self.request.user.id).exists()
         )
+        if self.request.user.is_authenticated:
+            context['purchase'] = Purchase.objects.filter(
+                user=self.request.user,
+                app=app,
+            ).first()
+        else:
+            context['purchase'] = None
+
         return context
 
 
@@ -446,6 +463,74 @@ def merge_category(request, category_id):
         {
             'category': category,
             'other_categories': other_categories,
+        }
+    )
+
+
+@require_POST
+def buy_app(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    detail_url = app.get_absolute_url()
+    if not request.user.is_authenticated:
+        login_url = reverse('mainapp:login')
+        query = urlencode({'next': detail_url})
+        return redirect(f'{login_url}?{query}')
+    if app.author_id == request.user.id:
+        messages.error(
+            request,
+            'Автор не может купить собственное приложение.'
+        )
+        return redirect(detail_url)
+    if Purchase.objects.filter(
+        user=request.user,
+        app=app,
+    ).exists():
+        messages.info(
+            request,
+            'Это приложение уже куплено.'
+        )
+        return redirect(detail_url)
+    app.buyers.add(
+        request.user,
+        through_defaults={
+            'paid_price': app.price,
+        }
+    )
+    messages.success(
+        request,
+        'Приложение добавлено в ваши покупки.'
+    )
+    return redirect(detail_url)
+
+
+@login_required
+def my_purchases(request):
+    purchases = (
+        Purchase.objects
+        .filter(user=request.user)
+        .select_related('app')
+        .only(
+            'id',
+            'paid_price',
+            'purchased_at',
+            'app',
+            'app__id',
+            'app__name',
+        )
+        .order_by('-purchased_at')
+    )
+    total = (
+        purchases.aggregate(
+            total=Sum('paid_price')
+        )['total']
+        or Decimal('0.00')
+    )
+    return render(
+        request,
+        'mainapp/my_purchases.html',
+        {
+            'purchases': purchases,
+            'total': total,
         }
     )
 

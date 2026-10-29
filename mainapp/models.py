@@ -72,9 +72,51 @@ class App(models.Model):
         related_name='favorite_apps',
         blank=True,
     )
-
+    buyers = models.ManyToManyField(
+        User,
+        through='Purchase',
+        related_name='purchased_apps',
+        blank=True,
+    )
+    def get_absolute_url(self):
+        return reverse(
+            'mainapp:app_detail',
+            kwargs={
+                'app_id': self.id,
+                'app_name': self.name,
+            }
+        )
     def __str__(self):
         return self.name
+
+
+class Purchase(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='purchases',
+    )
+    app = models.ForeignKey(
+        App,
+        on_delete=models.CASCADE,
+        related_name='purchases',
+    )
+    paid_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
+    purchased_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'app'],
+                name='unique_user_app_purchase',
+            ),
+        ]
+    def __str__(self):
+        return f'{self.user.username} — {self.app.name}'
 
     def get_absolute_url(self):
         return reverse(
@@ -84,7 +126,6 @@ class App(models.Model):
                 'app_name': self.name,
             }
         )
-
     def get_price_label(self):
         if self.price == 0:
             return 'Бесплатно'
