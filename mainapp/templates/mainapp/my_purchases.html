@@ -6,6 +6,26 @@
 
 <h1>Мои покупки</h1>
 
+<form method="get">
+    {{ form.non_field_errors }}
+
+    <label>
+        С
+        {{ form.date_from }}
+    </label>
+
+    <label>
+        По
+        {{ form.date_to }}
+    </label>
+
+    <button type="submit">
+        Показать
+    </button>
+</form>
+
+<hr>
+
 {% for purchase in purchases %}
 
     <div>

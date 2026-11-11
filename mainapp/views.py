@@ -22,6 +22,8 @@ from decimal import Decimal
 from django.db.models import Sum
 from django.views.decorators.http import require_POST
 from .models import App, Purchase
+from .forms import PurchasePeriodForm
+
 
 def about(request):
     return render(request, 'mainapp/about.html')
@@ -519,6 +521,19 @@ def my_purchases(request):
         )
         .order_by('-purchased_at')
     )
+    form = PurchasePeriodForm(request.GET or None)
+
+    if form.is_valid():
+        date_from = form.cleaned_data.get('date_from')
+        date_to = form.cleaned_data.get('date_to')
+        if date_from:
+            purchases = purchases.filter(
+                purchased_at__date__gte=date_from
+            )
+        if date_to:
+            purchases = purchases.filter(
+                purchased_at__date__lte=date_to
+            )
     total = (
         purchases.aggregate(
             total=Sum('paid_price')
@@ -531,6 +546,7 @@ def my_purchases(request):
         {
             'purchases': purchases,
             'total': total,
+            'form': form,
         }
     )
 

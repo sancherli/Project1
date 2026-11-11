@@ -90,3 +90,27 @@ class RegisterForm(UserCreationForm):
         return email
 
 
+class PurchasePeriodForm(forms.Form):
+    date_from = forms.DateField(
+        label='С',
+        required=False,
+        widget=forms.DateInput(
+            attrs={'type': 'date'}
+        ),
+    )
+    date_to = forms.DateField(
+        label='По',
+        required=False,
+        widget=forms.DateInput(
+            attrs={'type': 'date'}
+        ),
+    )
+    def clean(self):
+        cleaned_data = super().clean()
+        date_from = cleaned_data.get('date_from')
+        date_to = cleaned_data.get('date_to')
+        if date_from and date_to and date_from > date_to:
+            raise forms.ValidationError(
+                'Дата «С» не может быть позже даты «По».'
+            )
+        return cleaned_data
