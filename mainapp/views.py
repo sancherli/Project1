@@ -23,6 +23,7 @@ from django.db.models import Sum
 from django.views.decorators.http import require_POST
 from .models import App, Purchase
 from .forms import PurchasePeriodForm
+from .forms import CategoryFormSet
 
 
 def about(request):
@@ -549,5 +550,49 @@ def my_purchases(request):
             'form': form,
         }
     )
+
+
+@login_required
+def edit_categories(request):
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            'У вас нет права редактировать категории.'
+        )
+        return redirect('mainapp:home')
+    categories = Category.objects.order_by('name')
+    if request.method == 'POST':
+        formset = CategoryFormSet(
+            request.POST,
+            queryset=categories,
+        )
+        if formset.is_valid():
+            old_names = {
+                category.id: category.name
+                for category in categories
+            }
+            categories_to_save = formset.save(commit=False)
+            renamed_count = 0
+            for category in categories_to_save:
+                if old_names.get(category.id) != category.name:
+                    renamed_count += 1
+                category.save()
+            messages.success(
+                request,
+                f'Переименовано категорий: {renamed_count}.'
+            )
+            return redirect('mainapp:edit_categories')
+    else:
+        formset = CategoryFormSet(
+            queryset=categories,
+        )
+    return render(
+        request,
+        'mainapp/edit_categories.html',
+        {
+            'formset': formset,
+        }
+    )
+
 
 # Create your views here.

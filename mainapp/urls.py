@@ -50,5 +50,6 @@ urlpatterns = [
     path('app/<int:app_id>/purchase/',views.buy_app,name='buy_app',),
 
     path('app/<int:app_id>/<str:app_name>/',views.AppDetailView.as_view(),name='app_detail',),
+    path('categories/edit/',views.edit_categories,name='edit_categories',),
 ]
 

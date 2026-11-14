@@ -1,9 +1,10 @@
 from django import forms
-from .models import App, Review
+from .models import App, Review, Category
 from django.conf import settings
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.forms import modelformset_factory
 
 
 class ReviewForm(forms.ModelForm):
@@ -114,3 +115,17 @@ class PurchasePeriodForm(forms.Form):
                 'Дата «С» не может быть позже даты «По».'
             )
         return cleaned_data
+
+
+class CategoryEditForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name']
+
+
+CategoryFormSet = modelformset_factory(
+    Category,
+    form=CategoryEditForm,
+    extra=0,
+)
+

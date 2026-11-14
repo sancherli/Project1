@@ -55,10 +55,14 @@
     Мои покупки
     </a>
 
-    {% if request.user.is_staff or perms.mainapp.change_app %}
-        <a href="{% url 'mainapp:bulk_discount' %}">
-            Массовая скидка
-        </a>
+    {% if request.user.is_staff %}
+    <a href="{% url 'mainapp:bulk_discount' %}">
+        Массовая скидка
+    </a>
+
+    <a href="{% url 'mainapp:edit_categories' %}">
+        Редактировать категории
+    </a>
     {% endif %}
 
     <form method="post"

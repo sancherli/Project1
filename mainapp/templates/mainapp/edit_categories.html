@@ -1,0 +1,36 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Редактирование категорий{% endblock %}
+
+{% block content %}
+
+<h1>Редактирование категорий</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ formset.management_form }}
+
+    {% for form in formset %}
+        <div>
+            {{ form.id }}
+
+            {{ form.name.errors }}
+
+            <label>
+                {{ form.instance.name }}
+                {{ form.name }}
+            </label>
+        </div>
+    {% empty %}
+        <p>Категорий пока нет.</p>
+    {% endfor %}
+
+    <br>
+
+    <button type="submit">
+        Сохранить
+    </button>
+</form>
+
+{% endblock %}
