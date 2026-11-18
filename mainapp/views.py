@@ -24,6 +24,9 @@ from django.views.decorators.http import require_POST
 from .models import App, Purchase
 from .forms import PurchasePeriodForm
 from .forms import CategoryFormSet
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+from .forms import PriceFilterForm
 
 
 def about(request):
@@ -97,20 +100,42 @@ def app_detail(request, app_id, app_name):
         'app': app,
     })
 
+
+@cache_page(60 * 2)
+@vary_on_cookie
 def category_detail(request, category_id, category_name):
     print(category_name)
     category = get_object_or_404(Category, id=category_id)
     apps = App.objects.filter(category=category)
+    q = request.GET.get('q', '').strip()
+    if q:
+        apps = apps.filter(name__icontains=q)
+    form = PriceFilterForm(request.GET or None)
+    if form.is_valid():
+        price_min = form.cleaned_data.get('price_min')
+        price_max = form.cleaned_data.get('price_max')
+        sort = form.cleaned_data.get('sort')
+        if price_min is not None:
+            apps = apps.filter(price__gte=price_min)
+
+        if price_max is not None:
+            apps = apps.filter(price__lte=price_max)
+
+        if sort:
+            apps = apps.order_by(sort)
+    most_expensive = apps.order_by('-price').first()
     paginator = Paginator(apps, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    most_expensive = apps.order_by('-price').first()
     return render(request, 'mainapp/category.html', {
         'category': category,
         'apps': page_obj,
         'page_obj': page_obj,
         'most_expensive': most_expensive,
+        'q': q,
+        'form': form,
     })
+
 
 def home(request):
     q = request.GET.get('q', '')

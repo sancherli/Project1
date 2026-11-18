@@ -1,7 +1,6 @@
 from django import forms
 from .models import App, Review, Category
 from django.conf import settings
-from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import modelformset_factory
@@ -129,3 +128,38 @@ CategoryFormSet = modelformset_factory(
     extra=0,
 )
 
+
+class PriceFilterForm(forms.Form):
+    price_min = forms.DecimalField(
+        label='Цена от',
+        required=False,
+        min_value=0,
+    )
+    price_max = forms.DecimalField(
+        label='до',
+        required=False,
+        min_value=0,
+    )
+    SORT_CHOICES = [
+        ('', 'Порядок'),
+        ('price', 'Сначала дешёвые'),
+        ('-price', 'Сначала дорогие'),
+        ('name', 'По названию'),
+    ]
+    sort = forms.ChoiceField(
+        choices=SORT_CHOICES,
+        required=False,
+    )
+    def clean(self):
+        cleaned_data = super().clean()
+        price_min = cleaned_data.get('price_min')
+        price_max = cleaned_data.get('price_max')
+        if (
+            price_min is not None
+            and price_max is not None
+            and price_min > price_max
+        ):
+            raise forms.ValidationError(
+                'Цена «от» не может быть больше цены «до».'
+            )
+        return cleaned_data

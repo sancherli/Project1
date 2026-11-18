@@ -14,6 +14,29 @@
     <button type="submit">Найти</button>
 </form>
 
+<form method="get">
+    {{ form.non_field_errors }}
+    <label>
+        Цена от
+        {{ form.price_min }}
+    </label>
+
+    <label>
+        до
+        {{ form.price_max }}
+    </label>
+
+    {{ form.sort }}
+
+    <button type="submit">
+        Подобрать
+    </button>
+
+    <a href="{% url 'mainapp:category_detail' category.id category.name %}">
+        Сбросить
+    </a>
+</form>
+
 {% for app in apps %}
     <div>
         <h2>
