@@ -7,14 +7,16 @@ from django.forms import modelformset_factory
 
 
 class ReviewForm(forms.ModelForm):
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if user is not None and user.is_authenticated:
+            self.fields.pop('name', None)
+
     class Meta:
         model = Review
-        fields = [
-            'name',
-            'rating',
-            'comment',
-            'recommended',
-        ]
+        fields = ['name', 'rating', 'comment', 'recommended']
 
         labels = {
             'name': 'Имя',
@@ -22,7 +24,6 @@ class ReviewForm(forms.ModelForm):
             'comment': 'Комментарий',
             'recommended': 'Рекомендуете приложение?',
         }
-
     def clean_rating(self):
         rating = self.cleaned_data['rating']
 

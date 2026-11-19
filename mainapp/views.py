@@ -45,16 +45,20 @@ def add_review(request, app_id):
     data = request.POST.copy()
     if request.user.is_authenticated:
         data['name'] = request.user.username
-    form = ReviewForm(data)
+    form = ReviewForm(
+        request.POST,
+        user=request.user,
+    )
     if form.is_valid():
         review = form.save(commit=False)
         review.app = app
+        if request.user.is_authenticated:
+            review.name = request.user.username
         review.save()
-        messages.success(
-            request,
-            'Отзыв успешно добавлен.'
-        )
+        messages.success(request, 'Отзыв сохранён.')
         return redirect(app.get_absolute_url())
+
+    messages.success(request, 'Отзыв сохранён.')
 
     reviews = app.review_set.order_by('-created_at')
     if request.user.is_authenticated:
@@ -228,7 +232,7 @@ class AppDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         app = self.object
         context['reviews'] = app.review_set.order_by('-created_at')
-        context['form'] = ReviewForm()
+        context['form'] = ReviewForm(user=self.request.user)
         context['is_favorite'] = (
             self.request.user.is_authenticated
             and app.favorited_by.filter(id=self.request.user.id).exists()

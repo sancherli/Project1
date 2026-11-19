@@ -1,5 +1,9 @@
 {% extends 'mainapp/base.html' %}
+
+{% load django_bootstrap5 %}
+
 {% load store_tags %}
+
 
 {% block title %}{{ app.name }}{% endblock %}
 
@@ -153,29 +157,14 @@
     {% endif %}
 {% endif %}
 
-<p>
-    {{ form.name.label_tag }}
-    {{ form.name }}
-    {{ form.name.errors }}
-</p>
-    <p>
-        {{ form.rating.label_tag }}
-        {{ form.rating }}
-        {{ form.rating.errors }}
-    </p>
-    <p>
-        {{ form.comment.label_tag }}
-        {{ form.comment }}
-        {{ form.comment.errors }}
-    </p>
-    <p>
-        {{ form.recommended.label_tag }}
-        {{ form.recommended }}
-        {{ form.recommended.errors }}
-    </p>
-    <button type="submit">
-        Отправить отзыв
-    </button>
-</form>
+     <form method="post" action="{% url 'mainapp:add_review' app.id %}">
+        {% csrf_token %}
+
+        {% bootstrap_form form %}
+
+        <button type="submit" class="btn btn-primary">
+            Отправить отзыв
+        </button>
+    </form>
 
 {% endblock %}
