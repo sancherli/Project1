@@ -3,10 +3,31 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator
 
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
+    icon = models.ImageField(
+        upload_to='categories/',
+        blank=True,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['png', 'jpg', 'jpeg', 'webp']
+            )
+        ],
+    )
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.icon:
+            from PIL import Image
+
+            image = Image.open(self.icon.path)
+
+            if image.size != (32, 32):
+                image = image.resize((32, 32))
+                image.save(self.icon.path)
 
     def __str__(self):
         return self.name

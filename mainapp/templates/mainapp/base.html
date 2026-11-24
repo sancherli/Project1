@@ -25,6 +25,14 @@
 
 <nav>
     <strong>Категории:</strong>
+    {% if category.icon %}
+    <img
+        src="{{ category.icon.url }}"
+        alt="{{ category.name }}"
+        width="32"
+        height="32"
+    >
+        {% endif %}
 
     {% for category in nav_categories %}
         <a href="{% url 'mainapp:category_detail' category.id category.name %}">
