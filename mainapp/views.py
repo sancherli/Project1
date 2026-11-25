@@ -27,6 +27,10 @@ from .forms import CategoryFormSet
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 from .forms import PriceFilterForm
+from django.views import View
+from django.db.models import Count
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
 
 def about(request):
@@ -623,5 +627,41 @@ def edit_categories(request):
         }
     )
 
+
+class DevelopersView(View):
+    def get(self, request):
+        developers = (
+            User.objects
+            .annotate(apps_count=Count('apps'))
+            .filter(apps_count__gt=0)
+            .order_by('-apps_count', 'username')
+        )
+        return render(
+            request,
+            'mainapp/devs.html',
+            {
+                'developers': developers,
+            }
+        )
+
+
+def developer_detail(request, username):
+    developer = get_object_or_404(
+        User,
+        username=username
+    )
+    apps = (
+        App.objects
+        .filter(author=developer)
+        .order_by('-created_at')
+    )
+    return render(
+        request,
+        'mainapp/developer_detail.html',
+        {
+            'developer': developer,
+            'apps': apps,
+        }
+    )
 
 # Create your views here.

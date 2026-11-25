@@ -51,5 +51,8 @@ urlpatterns = [
 
     path('app/<int:app_id>/<str:app_name>/',views.AppDetailView.as_view(),name='app_detail',),
     path('categories/edit/',views.edit_categories,name='edit_categories',),
+
+    path('devs/',views.DevelopersView.as_view(),name='developers',),
+    path('dev/<str:username>/',views.developer_detail,name='developer_detail',),
 ]
 

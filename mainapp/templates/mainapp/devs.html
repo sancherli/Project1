@@ -1,0 +1,25 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}Разработчики магазина{% endblock %}
+
+{% block content %}
+
+<h1>Разработчики магазина</h1>
+
+{% for developer in developers %}
+
+    <div>
+        <a href="/dev/{{ developer.username }}/">
+            {{ developer.username }}
+        </a>
+
+        — приложений: {{ developer.apps_count }}
+    </div>
+
+{% empty %}
+
+    <p>Разработчиков пока нет.</p>
+
+{% endfor %}
+
+{% endblock %}
