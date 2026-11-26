@@ -30,7 +30,10 @@ from .forms import PriceFilterForm
 from django.views import View
 from django.db.models import Count
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.pagination import PageNumberPagination
+from .serializers import ReviewSerializer
 
 
 def about(request):
@@ -663,5 +666,35 @@ def developer_detail(request, username):
             'apps': apps,
         }
     )
+
+
+class ReviewPagination(PageNumberPagination):
+    page_size = 5
+
+
+class AppReviewsAPIView(generics.ListCreateAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = ReviewPagination
+    def get_app(self):
+        return get_object_or_404(
+            App,
+            id=self.kwargs['app_id']
+        )
+    def get_queryset(self):
+        app = self.get_app()
+
+        return (
+            Review.objects
+            .filter(app=app)
+            .order_by('-created_at')
+        )
+    def perform_create(self, serializer):
+        app = self.get_app()
+
+        serializer.save(
+            app=app,
+            name=self.request.user.username,
+        )
 
 # Create your views here.

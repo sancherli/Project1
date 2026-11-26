@@ -54,5 +54,7 @@ urlpatterns = [
 
     path('devs/',views.DevelopersView.as_view(),name='developers',),
     path('dev/<str:username>/',views.developer_detail,name='developer_detail',),
+
+    path('api/apps/<int:app_id>/reviews/',views.AppReviewsAPIView.as_view(),name='api_app_reviews',),
 ]
 
